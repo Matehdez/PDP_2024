@@ -1,0 +1,51 @@
+// Apellido y Nombre:
+
+import parcial.*
+
+describe "Tests para determinar que un agente elige paquete correctamente, segun estrategia navegante" {
+  const alma = new Alma (dineroAlMorir = 600, buenasAcciones=10)
+  const  alma2 = new Alma(dineroAlMorir = 900, buenasAcciones = 70)
+
+  const agente = new Agente(deuda=100, estrategia = navegante)
+
+  test "Vendedor elige la estrategia correcta" {
+    const paqueteElegido = agente.elegirPaquete(alma)
+
+    const paqueteEsperado= new Bote(alma = alma, valorBasico = navegante.valorBasico(alma))
+
+    assert.equals(paqueteEsperado, paqueteElegido)
+
+  }
+
+  test "El valor basico del paquete para alma es correcto"{
+    assert.equals(10, navegante.valorBasico(alma))
+  }
+
+  test "Vendedor elige la estrategia correcta, pero con otra alma"{
+
+    const paqueteElegido2 = agente.elegirPaquete(alma2)
+
+    const paqueteEsperado2= new Crucero(alma = alma2, valorBasico = navegante.valorBasico(alma2))
+
+    assert.equals(paqueteEsperado2, paqueteElegido2)
+
+    //Se me explico por medio de un ayudante que este test falla por un posible error de wollok
+    //Como se puede apreciar, la logica es muy parecida al test anterior y sin embargo este ultimo funciona
+
+  }
+
+  test "El valor basico del paquete para alma2 es correcto"{
+  assert.equals(70, navegante.valorBasico(alma2))
+}
+
+test "El costo total de un paquete bote para un alma con 70 acciones buenas es correcto" {
+    const paqueteElegido = new Bote(alma = alma2, valorBasico = 100)
+
+    const costo = paqueteElegido.costo()
+
+    assert.equals(140, costo)
+}
+
+
+
+}
