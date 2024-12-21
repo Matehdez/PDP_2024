@@ -1,0 +1,145 @@
+//* EJERCICIO ENTRADA DE CINE ==========================================================================
+//PdP Jueves TM
+//Hernandez Mateo Nicolas
+
+//Introducción
+//En un cine de barrio, se necesita un sistema para conocer el precio de una entrada para ver una peli.
+
+//Existe una sala no numerada (a la que se le pueden poner y sacar asientos), y una sala con los asientos numerados, 
+//que tiene 240 asientos fijos.
+
+//Para la sala no numerada, el valor de la entrada es $9000 más el adicional por sistema de sonido menos $1 por cada 
+//asiento, pero nunca superando en total $10000.
+
+//Para la sala numerada la entrada sale $8000 más el adicional por sistema de sonido.
+
+//El adicional en función del sistema de sonido de la sala puede ser:
+//Para el sistema de sonido “Dolby super sarraun” se cobra $1000 si la sala tiene menos de 150 asientos y $2000 si supera esa cantidad.
+//Para el sistema de sonido “Qwert 360 XWF” se cobra $13 por cada asiento.
+//Para el sistema de sonido estándar no se cobra nada.
+
+//*PUNTO 1
+// Conocer el precio de una entrada.
+
+//Salas-------------------------------------------
+object salaSinNumerar {
+
+  var asientos = 183
+  const valorSala = 9000
+
+  method agregarAsientos(n) {
+    asientos += n
+  }
+  method sacarAsientos(n) {
+    asientos -= n
+  }
+
+  method asientos () = asientos
+  
+  method valorEntrada (sistema) =
+    (sistema.costoServicio(asientos) + valorSala - asientos).min(10000)
+  
+}
+
+object salaNumerada {
+
+  const asientos = 240
+  const valorSala = 8000
+
+  method asientos () = asientos
+  method valorEntrada (sistema) = 
+    sistema.costoServicio(asientos) + valorSala
+
+}
+
+//Sistemas-------------------------------------------------------
+object sistemaDolby {
+
+  method costoServicio (asientosSala) {
+    if (asientosSala < 150) {
+      return 1000
+    }else {
+      return 2000
+    }
+  }
+
+}
+
+object sistemaQwert {
+
+  method costoServicio (asientosSala) = asientosSala * 13
+}
+
+object sistemaEstandar {
+
+  method costoServicio (_) = 0
+}
+
+
+//TESTS ======================================================================================================
+
+import example.salaNumerada
+import example.salaSinNumerar
+import example.sistemaDolby
+import example.sistemaEstandar
+import example.sistemaQwert
+
+//*PUNTO 2 
+//Codificar tests automatizados para verificar:
+//El valor de una entrada para la sala no numerada, sin llegar a los 10000.
+//Idem pero probando que no se pase de los 10000.
+//El valor de una entrada para una sala numerada.
+describe "Grupo de testeto para conocer los valores de las entradas de las distintas salas" {
+
+  test "Valor de entrada de sala no numerada, que no alcanza determinado valor" {
+    assert.that(salaSinNumerar.valorEntrada(sistemaDolby) < 10000 
+    || salaSinNumerar.valorEntrada(sistemaEstandar) < 10000
+    || salaSinNumerar.valorEntrada(sistemaQwert) < 10000) 
+  }
+
+  //Al ser el valor de una entrada para una sala sin numerar de tipo variable, me vería en la obligación de hardcodear
+  //un resultado que luego, si se cambiasen los valores del archivo main, podria alterar el resultado del test
+  //Si lo hubiese querido hacer de esta forma hubiese hecho algo asi:
+  //    assert.equals(8817, salaSinNumerar.valorEntrada(sistemaEstandar))
+  //debido a que en mi version de codigo, es el unico caso que se puede verificar que no alcance los 10000 de valor
+
+  //Sin embargo finalmente opté por esta versión, que es mas general y verifica que existe al menos un valor para una entrada
+  //que no alcanza determinado valor (en este caso 10000)
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+    test "Valor de entrada de sala no numerada, que no pase determiando valor" {
+    assert.notThat(salaSinNumerar.valorEntrada(sistemaDolby) > 10000 
+    || salaSinNumerar.valorEntrada(sistemaEstandar) > 10000
+    || salaSinNumerar.valorEntrada(sistemaQwert) > 10000) 
+  }
+
+  //aquí me pasó algo parecido al caso anterior:
+  //Si hubiese querido verificar todos aquellos valores de entradas que no superen los 10000, particularizando en mi codigo,
+  //hubiese hecho:
+    //    assert.equals(8817, salaSinNumerar.valorEntrada(sistemaEstandar))
+    //    assert.equals(10000, salaSinNumerar.valorEntrada(sistemaDolby))
+    //    assert.equals(10000, salaSinNumerar.valorEntrada(sistemaQwert))
+  //Pues se verifican todos los casos que no superan 10000 de valor
+
+  //Finalmente opté por verificar que no ocurra caso alguno en donde haya una entrada que supere los 10000 de valor,
+  //haciendolo mas general por las razones ya comentadas anteriormente.
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+    test "Verifica que se cumplan los valores de entrada para una sala numerada" {
+    assert.equals(10000, salaNumerada.valorEntrada(sistemaDolby))
+    assert.equals(8000, salaNumerada.valorEntrada(sistemaEstandar))
+    assert.equals(11120, salaNumerada.valorEntrada(sistemaQwert))
+  }
+//Aquí simplemente verifiqué que se cumplan todos los valores de la sala numerada, pues en este caso
+//el valor es constante y es imposible que cambie, tal y como se dió el enunciado
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+
+}
+
+//*Para pensar: ¿Qué otros tests harían falta?
+//Podrian verificarse también que se hayan agregado o quitado la cantidad correcta de asientos en el caso de
+//las salas no numeradas
+
+//Se podrian verificar que los costos de los servicios se estén aplicando correctamente, tal y como se espera en el enunciado
+
