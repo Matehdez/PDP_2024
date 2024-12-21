@@ -22,10 +22,6 @@ Este repositorio contiene todos los trabajos prácticos y parciales resueltos du
 - **Prolog**: 33.4%
 - **Wollok**: 27.2%
 
-## Licencia
-
-Este proyecto está bajo la licencia MIT. Para más detalles, consulta el archivo [LICENSE](LICENSE).
-
 ---
 
 ¡Gracias por visitar este repositorio! Esperamos que te sea de ayuda en tu aprendizaje de los paradigmas de programación.
